@@ -14,7 +14,7 @@ if __name__ == '__main__':
                             help="the xml file to be converted (mandatory)")
     optParser.add_option("-o", "--output-file", dest='outfile',
                             help="the output file (mandatory)")
-    optParser.add_option("-s", "--separator", default=" ",
+    optParser.add_option("-s", "--separator", default=" ", type='str',
                             help="the separator for the output file (default=whitespace")
 
     (options, args) = optParser.parse_args()
@@ -29,8 +29,7 @@ if __name__ == '__main__':
         ) + '\n'
     )
     for element in xmltree.getroot():
-        print element.get('duration')
-        out.write('%s %s %s %s %s %s %s %s %s\n' % ( 
+        out.write(sep.join(['%s','%s','%s','%s','%s','%s','%s','%s','%s\n']) % ( 
                   element.get('time'),
                   element.get('loaded'),
                   element.get('emitted'),
