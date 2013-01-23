@@ -25,11 +25,13 @@ if __name__ == '__main__':
     
     out.write(sep.join(
             ['#time','loaded','emitted','running','waiting',
-            'ended','meanWaitingTime','meanTravelTime','duration']
+            'ended','meanWaitingTime','meanTravelTime','duration','norm-waiting']
         ) + '\n'
     )
     for element in xmltree.getroot():
-        out.write(sep.join(['%s','%s','%s','%s','%s','%s','%s','%s','%s\n']) % ( 
+        waiting = int(element.get('waiting'))
+        waitingPlusEmitted = waiting + int(element.get('emitted'))
+        out.write(sep.join(['%s','%s','%s','%s','%s','%s','%s','%s','%s', '%s\n']) % ( 
                   element.get('time'),
                   element.get('loaded'),
                   element.get('emitted'),
@@ -38,6 +40,8 @@ if __name__ == '__main__':
                   element.get('ended'),
                   element.get('meanWaitingTime'),
                   element.get('meanTravelTime'),
-                  element.get('duration')
+                  element.get('duration'),
+                  float(waiting) / waitingPlusEmitted
+                  
         ))
         
