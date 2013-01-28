@@ -15,9 +15,9 @@ if __name__ == '__main__':
     optParser.add_option("-o", "--output-file", dest='outfile',
                             help="the output file (mandatory)")
     optParser.add_option("-s", "--separator", default=" ", type='str',
-                            help="the separator for the output file (default=whitespace")
+                            help="the separator for the output file (default=whitespace)")
     optParser.add_option("-t", "--total", default=0, type='int',
-                            help="the total number of vehicles in the simulation [use if you need to normalize waiting/total, otherwise normalization will be waiting/(waiting+emitted)]")
+                            help="the total number of vehicles in the simulation [use if you need to normalize waiting/total]")
 
     (options, args) = optParser.parse_args()
     
