@@ -68,11 +68,15 @@ def main():
     # Obtain the results
     edges = handler.getNet().getEdges()
     total_length = sum( e.getLength() for e in edges )
+    total_length_lanes = sum( e.getLength() * e.getLaneNumber() for e in edges )
     capacity = float(total_length) / options.veh_length
-
+    capacity_lanes = float(total_length_lanes) / options.veh_length
     # Show the results
-    print
-    print 'Total network length: %.2f meters.' % total_length
-    print 'Estimated network capacity: %.2f vehicles.' % capacity
+    print 'Number of edges:', len(edges)
+    print 'Total network length (disregarding #lanes): %.2f meters.' % total_length
+    print 'Estimated network capacity (disregarding #lanes): %.2f vehicles.' % capacity
+    print 'Total network length (considering #lanes): %.2f meters.' % total_length_lanes
+    print 'Estimated network capacity (considering #lanes): %.2f vehicles.' % capacity_lanes
+    
 
 if __name__ == '__main__': main()

@@ -40,4 +40,6 @@ if __name__ == '__main__':
         variables = [element.get(f) for f in fields]
         
         out.write(sep.join(places + ['\n']) % tuple(variables))
-        
+     
+    out.close()
+    print "File '%s' written." % options.outfile     
