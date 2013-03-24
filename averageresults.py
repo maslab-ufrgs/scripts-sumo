@@ -11,6 +11,13 @@ tripinfo_099.xml, and the user wants to know the average travel time of each ite
  
 '''
 
+import xml.etree.ElementTree as ET
+import sys
+import os
+import csv
+from optparse import OptionParser
+import collections
+
 def main():
     
     (options, args) = parse_args()
@@ -20,38 +27,36 @@ def main():
         exit()
     
     #data = collections.defaultdict(dict)
-    
+    print options
     sep = options.separator.decode('string-escape')
     
     #opens output file and writes header
     outfile = open(options.output, 'w')
     fields = options.fields.split(',')
     
+    #adds the first column (iteration) to the fields
     fields = ['it'] + fields
     outfile.write('#' + sep.join(fields) + '\n')
     
     for i in range(options.iterations):
-        print 'Generating element for iteration', i
+        print 'Generating averages for iteration', i + 1
         
         
         #parses the i-th routeinfo file
-        tree = ET.parse(os.path.join(
-           options.path_to_input, 
-           '%s_%d.xml' % (options.routeinfo_prefix, str(i).zfill(3))
-        )) 
+        tree = ET.parse(
+           '%s%s.xml' % (options.prefix, str(i).zfill(3))
+        )
         
-#        full_trips = full_trips_in_window(options.begin, options.finish, os.path.join(
-#           options.path_to_input, 
-#           '%s_%d.xml' % (options.routeinfo_prefix, i+1)
-#        ))
         #initializes average data and sets the iteration number
         data = {f:0 for f in fields}
-        data['it'] = i
+        data['it'] = i + 1
         
         #traverses the xml file, averaging the values of the fiels
         parsed_elements = 0
         for element in tree.getroot():
-            for f in fields:
+            #print element.attrib
+            for f in fields[1:]:
+                #print type(data[f]), type(element.get(f)), type(parsed_elements)
                 data[f] = new_average(data[f], element.get(f), parsed_elements)
             
             parsed_elements += 1
@@ -123,9 +128,9 @@ def parse_args():
     )
     
     parser.add_option(
-        '-t', '--tripinfo-prefix',
-        help='the prefix for the tripinfo files: [prefix]_i.xml, where i is the iteration',
-        type=str, default='tripinfo'
+        '-p', '--prefix',
+        help='the prefix for the SUMO result files: [prefix]_i.xml, where i is the iteration',
+        type=str, default=None
     )
     
     parser.add_option(
@@ -144,11 +149,6 @@ def parse_args():
 
 
 
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
 
