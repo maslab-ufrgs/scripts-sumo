@@ -7,6 +7,28 @@ Created on 14/01/2013
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
+def generate_csv(inxml_file, outcsv_file, fields, separator):
+    sep = separator.decode('string-escape')
+    out = open(outcsv_file,'w')
+    xmltree = ET.parse(inxml_file)
+    
+    
+    fields = fields.split(',') if fields else []
+    
+    header = list(fields)
+    if len(header) > 0:
+        header[0] = "#" + header[0]
+        out.write(sep.join(header) + '\n')
+    
+    for element in xmltree.getroot():
+        places = ['%s' for f in fields]
+        variables = [element.get(f) for f in fields]
+        
+        out.write(sep.join(places + ['\n']) % tuple(variables))
+     
+    out.close()
+    print "File '%s' written." % options.outfile     
+    
 if __name__ == '__main__':
     optParser = OptionParser()
     
@@ -23,23 +45,4 @@ if __name__ == '__main__':
 
     (options, args) = optParser.parse_args()
     
-    sep = options.separator
-    out = open(options.outfile,'w')
-    xmltree = ET.parse(options.xmlfile)
-    
-    
-    fields = options.fields.split(',') if options.fields else []
-    
-    header = list(fields)
-    if len(header) > 0:
-        header[0] = "#" + header[0]
-        out.write(sep.join(header) + '\n')
-    
-    for element in xmltree.getroot():
-        places = ['%s' for f in fields]
-        variables = [element.get(f) for f in fields]
-        
-        out.write(sep.join(places + ['\n']) % tuple(variables))
-     
-    out.close()
-    print "File '%s' written." % options.outfile     
+    generate_csv(options.xmlfile, options.outfile, options.fields, options.separator)
