@@ -1,0 +1,12 @@
+<tripinfos>
+    <tripinfo id="aux69" depart="15.00" departLane="50to49_0" departPos="5.10" departSpeed="0.00" departDelay="0.00" arrival="150.00" arrivalLane="51to52_1" arrivalPos="207.53" arrivalSpeed="12.69" duration="135.00" routeLength="1702.27" waitSteps="0" rerouteNo="0" devices="tripinfo_aux69" vType="DEFAULT_VEHTYPE" vaporized=""/>
+    <tripinfo id="aux314" depart="64.00" departLane="50to51_0" departPos="5.10" departSpeed="0.00" departDelay="0.00" arrival="181.00" arrivalLane="51to52_0" arrivalPos="210.37" arrivalSpeed="12.71" duration="117.00" routeLength="1050.47" waitSteps="24" rerouteNo="0" devices="tripinfo_aux314" vType="DEFAULT_VEHTYPE" vaporized=""/>
+    <tripinfo id="aux422" depart="86.00" departLane="50to51_0" departPos="5.10" departSpeed="0.00" departDelay="0.00" arrival="181.00" arrivalLane="51to52_1" arrivalPos="212.16" arrivalSpeed="13.17" duration="95.00" routeLength="1052.26" waitSteps="3" rerouteNo="0" devices="tripinfo_aux422" vType="DEFAULT_VEHTYPE" vaporized=""/>
+</tripinfos>
+
+<!-- 
+1st: id=aux69 depart=15 arrival=150 duration=135.00
+2nd: id=aux314 depart=64 arrival=181 duration=117.00
+3rd: id=aux422 depart=86 arrival=181 duration=95.00
+
+-->

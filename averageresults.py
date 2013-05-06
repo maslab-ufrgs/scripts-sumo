@@ -18,9 +18,13 @@ import csv
 from optparse import OptionParser
 import collections
 
-def main():
+def average_results(options):
+    '''
+    Averages the results of the given attributes of a xml file.
     
-    (options, args) = parse_args()
+    The options object is configured according to parse_args()
+    
+    '''
     
     if not options.iterations:
         print 'parameter -i/--iterations required.'
@@ -41,19 +45,24 @@ def main():
     for i in range(options.iterations):
         print 'Generating averages for iteration', i + 1
         
-        
-        #parses the i-th routeinfo file
-        tree = ET.parse(
-           '%s%s.xml' % (options.prefix, str(i).zfill(3))
-        )
+        tripinfo_file = '%s%s.xml' % (options.prefix, str(i).zfill(3))
+        #parses the i-th tripinfo file
+        tree = ET.parse(tripinfo_file)
         
         #initializes average data and sets the iteration number
         data = {f:0 for f in fields}
         data['it'] = i + 1
         
-        #traverses the xml file, averaging the values of the fiels
+        ftrips = full_trips_in_window(options.begin, options.end, tripinfo_file)
+        
+        #traverses the xml file, averaging the values of the fields
         parsed_elements = 0
         for element in tree.getroot():
+            
+            #skips vehicles who haven't completed trips within the time window
+            if element.get('id') not in ftrips:
+                continue
+            
             #print element.attrib
             for f in fields[1:]:
                 #print type(data[f]), type(element.get(f)), type(parsed_elements)
@@ -65,7 +74,7 @@ def main():
         places = ['%s' for f in fields]
         variables = [data[f] for f in fields]
         
-        outfile.write(sep.join(places + ['\n']) % tuple(variables))
+        outfile.write((sep.join(places) + '\n') % tuple(variables))
         
     print "Output file '%s' written." % options.output
 
@@ -83,6 +92,9 @@ def full_trips_in_window(begin, finish, tripinfo_file):
     made a full trip between begin and finish
     
     '''
+    if finish == 0:
+        finish = sys.maxint
+    
     rinfo_tree = ET.parse(tripinfo_file)
     
     fulltrips = []
@@ -150,5 +162,6 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    main()
+    (options, args) = parse_args()
+    average_results(options)
 
