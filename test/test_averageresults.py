@@ -69,6 +69,30 @@ class Test(unittest.TestCase):
         
         self.assertEqual(estring, fstring)
         
+    def test_averageresults_without_timewindow(self):
+        '''
+        Uses the sample_tripinfo file
+        
+        '''
+        #creates an option object, it is an instance from a new class
+        options = type('', (), {})
+        options.output = 'result-now.csv'
+        options.fields = 'duration'
+        options.prefix = 'sample_tripinfo_'
+        options.iterations = 1
+        options.separator = ','
+        options.begin = 0
+        options.end = 0
+        
+        averageresults.average_results(options)
+        
+        f = open('result-now.csv')
+        fstring = f.read()
+        
+        estring = '#it,duration\n1,115.666666667\n'
+        
+        self.assertEqual(estring, fstring)
+        
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testFullTripsInWindow']
