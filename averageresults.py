@@ -31,7 +31,7 @@ def average_results(options):
         exit()
     
     #data = collections.defaultdict(dict)
-    print options
+    #print options
     sep = options.separator.decode('string-escape')
     
     #opens output file and writes header
@@ -43,7 +43,7 @@ def average_results(options):
     outfile.write('#' + sep.join(fields) + '\n')
     
     for i in range(options.iterations):
-        print 'Generating averages for iteration', i + 1
+        sys.stdout.write('Generating averages for iteration %d' % (i + 1) )
         
         tripinfo_file = '%s%s.xml' % (options.prefix, str(i).zfill(3))
         #parses the i-th tripinfo file
@@ -54,7 +54,7 @@ def average_results(options):
         data['it'] = i + 1
         
         ftrips = full_trips_in_window(options.begin, options.end, tripinfo_file)
-        
+        print ': %d full trips in window (%d,%d)' % (len(ftrips),  options.begin, options.end)
         #traverses the xml file, averaging the values of the fields
         parsed_elements = 0
         for element in tree.getroot():
@@ -141,7 +141,7 @@ def parse_args():
     
     parser.add_option(
         '-p', '--prefix',
-        help='the prefix for the SUMO result files: [prefix]_i.xml, where i is the iteration',
+        help='the prefix for the SUMO result files: [prefix]i.xml, where i is the iteration',
         type=str, default=None
     )
     
