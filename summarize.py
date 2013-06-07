@@ -50,7 +50,7 @@ if __name__ == '__main__':
     optParser.add_option("-f", "--fields", default=None, type=str,
                             help="the fields you want to output in the .csv file (field1,field2,field3,...).")
     
-    optParser.add_option("-t", "--timestep", default=None, type=int,
+    optParser.add_option("-t", "--timestep", default=-1, type=int,
                             help="the number of the timestep to get the data from. defaults to the last timestep")
     
     optParser.add_option("-z", "--zero-fill", action='store_true', default=False,
