@@ -3,8 +3,13 @@ Created on Jun 13, 2013
 
 @author: anderson
 
-Writes a file with the number of vehicles that used the road network links 
-in a given time window for each iteration
+Given a vehroute file (generated with SUMO's  --vehroute-output), 
+writes a file with the number of vehicles that used each road network edge 
+in a given time window for each iteration of a given experiment.
+
+Generates a .csv file, one row per iteration.
+
+Requires sumolib in python's PATH
  
 '''
 import sys
@@ -51,32 +56,41 @@ def count(netfile, rprefix, numiter, ofile, firstiter=1, wbegin=0, wend=0, filld
 
 if __name__ == '__main__':
     
-    optParser = OptionParser()
+    desc='''Given a vehroute file (generated with SUMO's  --vehroute-output), 
+writes a file with the number of vehicles that used each road network edge 
+in a given time window for each iteration of a given experiment.
 
-    optParser.add_option("-b", "--begin", type="int", default=0, help="begin of the time window")
-    optParser.add_option("-e", "--end", type="int", default=8530, help="end of the time window (0=unlimited; default=8530)")
+Generates a .csv file, one row per iteration.
+
+Requires sumolib in python's PATH
+'''
     
-    optParser.add_option("-i", "--iterations", type="int", default=400, 
+    parser = OptionParser(description=desc)
+
+    parser.add_option("-b", "--begin", type="int", default=0, help="begin of the time window")
+    parser.add_option("-e", "--end", type="int", default=8530, help="end of the time window (0=unlimited; default=8530)")
+    
+    parser.add_option("-i", "--iterations", type="int", default=400, 
                          help="Number of iterations to be analysed")
     
-    optParser.add_option("--first-iter", type="int", default=1, 
+    parser.add_option("--first-iter", type="int", default=1, 
                          help="Number of the first iteration to be analysed (usually 0 or 1; default=1)")
     
-    optParser.add_option("-r", "--routeinfo-prefix", type="string", default='routeinfo_',
+    parser.add_option("-r", "--routeinfo-prefix", type="string", default='routeinfo_',
         help="prefix to the .rou.xml files to be analysed")    
     
-    optParser.add_option("-n", "--netfile", type="string", default=None,
+    parser.add_option("-n", "--netfile", type="string", default=None,
         help="The path to .net.xml file")
-    optParser.add_option("-o", "--output", type="string", default=None,
+    parser.add_option("-o", "--output", type="string", default=None,
         help="The path to the output file")
                          
-    optParser.add_option("-z", "--zero-fill", type=int, default=0,
+    parser.add_option("-z", "--zero-fill", type=int, default=0,
         help="perform a zero fill with the specified number of digits between the prefix and iteration number (for reading dua-generated files)"
     )                         
     
-    #optParser.add_option("-s", "--seed", type="int", help="random seed")
+    #parser.add_option("-s", "--seed", type="int", help="random seed")
     
-    (options, args) = optParser.parse_args()
+    (options, args) = parser.parse_args()
     
     count(
           options.netfile, options.routeinfo_prefix, 

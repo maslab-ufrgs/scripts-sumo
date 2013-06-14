@@ -3,84 +3,79 @@ Created on Jun 13, 2013
 
 @author: anderson
 
-Reads a routeinfo.xml result file (generated with --routeinfo.edges) and writes a .rou.xml file with the trips contained in it.
- 
+Reads a routeinfo.xml result file (generated with --routeinfo.edges) and writes a .rou.xml file 
+with the trips contained in it.
+
+Useful when the trips were generated on-the-fly so that you don't have an original .rou.xml file
+such as in TraCI-generated trips.
+
 '''
 import sys
-import sumolib
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
-def count(netfile, rprefix, numiter, ofile, firstiter=1, wbegin=0, wend=0, filldigits=0):
+def convert(rinfofile,roufile, wbegin=0, wend=0):
     
     if wend == 0:
         wend = sys.maxsize
         
-    edgeids = [e.getID() for e in sumolib.net.readNet(netfile).getEdges()]
-    
     #writes file header (x,edg1,edg2...)
-    ofile = open(ofile,'w')
-    ofile.write(','.join(['x'] + edgeids) + '\n')
+    rinfotree = ET.parse(rinfofile)
     
-    for i in range(firstiter, numiter+firstiter):
-        sys.stdout.write( 'Iteration %d...' % i)
-        linkusers = dict((e,0) for e in edgeids)
-        
-        fname = '%s%s.xml' % (rprefix, str(i).zfill(filldigits))
-        
-        rtree = ET.parse(fname)
-        
-        for veh in rtree.getroot():
-            #print float(veh.get('depart')) >= wbegin and float(veh.get('arrival') <= wend
-            try:                                                   
-                if float(veh.get('depart')) >= wbegin and float(veh.get('arrival')) <= wend:
-                    for e in veh[0].get('edges').split(' '):
-                        #sys.stdout.write(e)
-                        linkusers[e] += 1
-            except ValueError:
-                print 'Warning: %s has no depart or arrival in %s, skipping...' % (veh.get('id'), fname)  
-                #print '' 
-                    
-        #writes the number of link users for each edge in the current iteration
-        linearr = [i] + [linkusers[e] for e in edgeids]
-        ofile.write(','.join([str(elem) for elem in linearr]) + '\n')
-        sys.stdout.write( ' done.\n')            
+    drivers = []       
+    for vdata in rinfotree.getroot():
+        #print float(veh.get('depart')) >= wbegin and float(veh.get('arrival') <= wend
+        try:                                                   
+            if float(vdata.get('depart')) >= wbegin and float(vdata.get('arrival')) <= wend:
+                drivers.append({
+                    'id':vdata.get('id'), 
+                    'depart': float(vdata.get('depart')), 
+                    'route': vdata[0].get('edges')
+                })
+        except ValueError:
+            print 'Warning: %s has no depart or arrival, skipping...' % (vdata.get('id'))  
+            #print '' 
+                
+    #sorts drivers by their depart
+    sdrivers = sorted(drivers, key=lambda x: x['depart'])
+    
+    ofile = open(roufile,'w')
+    ofile.write('<routes>\n')       
+    for d in sdrivers:
+        ofile.write('\t<vehicle depart="%.2f" id="%s" >\n' % (d['depart'], d['id']))
+        ofile.write('\t\t<route edges="%s" />\n' % d['route'])
+        ofile.write('\t</vehicle>\n')
+    ofile.write('</routes>\n')     
     ofile.close()
+        
     
 
 if __name__ == '__main__':
     
-    optParser = OptionParser()
+    desc="""Reads a routeinfo.xml result file (generated with --routeinfo.edges) and writes a .rou.xml file 
+with the trips contained in it.
 
-    optParser.add_option("-b", "--begin", type="int", default=0, help="begin of the time window")
-    optParser.add_option("-e", "--end", type="int", default=8530, help="end of the time window (0=unlimited; default=8530)")
+Useful when the trips were generated on-the-fly so that you don't have an original .rou.xml file
+such as in TraCI-generated trips.
+
+One can specify a time window to reconstruct only the trips that occurred there"""
     
-    optParser.add_option("-i", "--iterations", type="int", default=400, 
-                         help="Number of iterations to be analysed")
+    parser = OptionParser(description=desc)
+    parser.add_option("-b", "--begin", type="int", default=0, help="begin of the time window")
+    parser.add_option("-e", "--end", type="int", default=0, help="end of the time window; default=0 (unlimited)")
     
-    optParser.add_option("--first-iter", type="int", default=1, 
-                         help="Number of the first iteration to be analysed (usually 0 or 1; default=1)")
-    
-    optParser.add_option("-r", "--routeinfo-prefix", type="string", default='routeinfo_',
-        help="prefix to the .rou.xml files to be analysed")    
-    
-    optParser.add_option("-n", "--netfile", type="string", default=None,
-        help="The path to .net.xml file")
-    optParser.add_option("-o", "--output", type="string", default=None,
-        help="The path to the output file")
+    parser.add_option("-r", "--routeinfo", type="string", 
+        help="path to the routeinfo file from which the trips will be reconstructed")    
+
+    parser.add_option("-o", "--output", type="string", default=None,
+        help="The path to the output .rou.xml file where the reconstructed trips will be written")
                          
-    optParser.add_option("-z", "--zero-fill", type=int, default=0,
-        help="perform a zero fill with the specified number of digits between the prefix and iteration number (for reading dua-generated files)"
-    )                         
+    #parser.add_option("-s", "--seed", type="int", help="random seed")
     
-    #optParser.add_option("-s", "--seed", type="int", help="random seed")
+    (options, args) = parser.parse_args()
     
-    (options, args) = optParser.parse_args()
-    
-    count(
-          options.netfile, options.routeinfo_prefix, 
-          options.iterations, options.output, options.first_iter,
-          options.begin, options.end, options.zero_fill
+    convert(
+          options.routeinfo, options.output, options.begin, options.end
     )
     print 'Output file %s written.' % options.output
     

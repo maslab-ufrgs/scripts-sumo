@@ -3,6 +3,8 @@ Created on 08/04/2013
 
 @author: artavares
 
+Given a .rou.xml file, counts the number of vehicles each road network link will receive
+
 '''
 
 #>>.rou.xml
@@ -42,15 +44,16 @@ class CountUsage(object):
             
 
 if __name__ == '__main__':
-    optParser = OptionParser()
-    optParser.add_option("-r", "--route-file", dest='routefile',
+    parser = OptionParser(description='Given a .rou.xml file, counts the number of vehicles each road network link will receive')
+    
+    parser.add_option("-r", "--route-file", dest='routefile',
                             help="the input .rou.xml file") 
-    #optParser.add_option("-o", "--output-file", dest='outfile',
+    #parser.add_option("-o", "--output-file", dest='outfile',
     #                        help="the output file (mandatory)")
-    optParser.add_option("-s", "--separator", default=" ", type='str',
+    parser.add_option("-s", "--separator", default=" ", type='str',
                             help="the separator for the output (default=whitespace)")
     
-    (options, args) = optParser.parse_args(sys.argv)
+    (options, args) = parser.parse_args(sys.argv)
     
     counter = CountUsage(options.routefile)
     counter.count_usage()
